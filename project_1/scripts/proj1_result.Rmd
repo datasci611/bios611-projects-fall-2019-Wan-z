@@ -55,7 +55,6 @@ df_bus <- df %>%
   summarise(count = n(),
             number_bus_tickets = sum(`Bus Tickets (Number of)`)
   )
-df_bus 
   
 myColors = c(brewer.pal(6,"YlOrRd"), brewer.pal(6,"Spectral")) # produces an array/list of colors
 names(myColors) = df_bus$month
@@ -68,6 +67,7 @@ ggplot(df_bus, aes(x=year, y=number_bus_tickets)) +
 ggplot(df_bus, aes(x=month, y=number_bus_tickets)) +
   geom_smooth() +
   scale_x_continuous(breaks = seq(1:12)) +
+  geom_point(color = 'lightblue') +
   labs(title = 'Bus Tickets (Number of) Varied in different month',
        y = 'Number of bus tickets by month')
 
@@ -85,7 +85,6 @@ df_diapers <- df %>%
   summarise(count = n(),
             diapers = sum(Diapers)
   )
-df_diapers
 
 ggplot(df_diapers) +
   geom_line(mapping = aes(x = year, y = diapers)) +
@@ -113,7 +112,6 @@ df_schoolkits <- df %>%
   summarise(count = n(),
             school_kits = sum(`School Kits`)
   )
- df_schoolkits
  
  ggplot(df_schoolkits, mapping = aes(x = year, y = school_kits)) +
   geom_col(aes(fill=month)) +
@@ -123,6 +121,7 @@ df_schoolkits <- df %>%
  ggplot(df_schoolkits, mapping = aes(x = month, y= school_kits)) +
   geom_smooth() +
   scale_x_continuous(breaks = seq(1:12)) +
+  geom_point(color = 'lightblue') +
   labs(title = 'School Kits',
        y = 'Number of School Kits')
 ```
@@ -139,7 +138,6 @@ df_hgkit <- df %>%
   summarise(count = n(),
             hgkit = sum(`Hygiene Kits`)
   )
-df_hgkit
 
 ggplot(df_hgkit) +
   geom_line(mapping = aes(x = year, y = hgkit)) +
@@ -160,7 +158,6 @@ df_finance <- df %>%
   summarise(count = n(),
             finance = sum(`Financial Support`)
   )
-df_finance
 
 ggplot(df_finance) +
   geom_line(mapping = aes(x = year, y = finance)) +
@@ -236,6 +233,7 @@ ggplot(df_cloth, aes(x=year, y=clothing)) +
 
 ggplot(df_cloth, aes(x=month, y=clothing)) +
   geom_smooth() +
+  scale_x_continuous(breaks = seq(1:12)) +
   geom_point(color = 'lightblue') +
   labs(title = 'Pounds of Food Provided Per Person',
        y = 'Average Pounds of Food Provided')
