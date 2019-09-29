@@ -41,6 +41,7 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 ggplot(df_bus, aes(x=month, y=number_bus_tickets)) +
   geom_smooth() +
   scale_x_continuous(breaks = seq(1:12)) +
+  geom_point(color = 'lightblue') +
   labs(title = 'Bus Tickets (Number of) Varied in different month',
        y = 'Number of bus tickets by month')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/bus_tickets_smooth.png', height=4, width=6)
@@ -92,6 +93,7 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 ggplot(df_schoolkits, mapping = aes(x = month, y= school_kits)) +
   geom_smooth() +
   scale_x_continuous(breaks = seq(1:12)) +
+  geom_point(color = 'lightblue') +
   labs(title = 'School Kits',
        y = 'Number of School Kits')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/schoolkits_month.png', height=4, width=6)
@@ -199,21 +201,9 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 #ggplot(df_food_cloth, aes(x=food, y=cloth)) +
 #  geom_bin2d(aes(fill=count))
   
-#Clients
-df_client <- df %>%
-  filter(year>1996 & year<2019) %>%
-  group_by(year) %>%
-  summarise(cases = n(),
-            clients =length(unique(`Client File Number`))) %>%    #number of cases and clients
-  gather('cases', 'clients', key='type', value = 'count')   
-
-ggplot(df_client, aes(x = year, y = count)) +
-  geom_line(aes(color = type)) +
-  labs(title = 'Changes in Number of Cases and Clients')
-ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/cases_clients.png', height=4, width=6)
 
 #predict with linear regression
-df_client2 <- df %>%
+df_client <- df %>%
   filter(year>1996 & year<2019) %>%
   group_by(year) %>%
   summarise(cases = n(),
@@ -221,9 +211,20 @@ df_client2 <- df %>%
 
 lmod <- lm(cases ~ year, data = df_client) #predict the demand in 2019
 predict_cases2019 <- lmod$coefficients %*% c(1,2019)
+ggplot(df_client, aes(x = year, y = cases)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = 'Trend of Amount of Cases')
+ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/predict_cases.png', height=6, width=8)
 
-lmod2 <- lm(clients ~ year, data = df_client2) #predict the clients in 2019
+lmod2 <- lm(clients ~ year, data = df_client) #predict the clients in 2019
 predict_clients2019 <- lmod2$coefficients %*% c(1,2019)
+ggplot(df_client, aes(x = year, y = clients)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = 'Trend of Number of clients')
+ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/predict_clients.png', height=6, width=8)
+
 
 #the clients recieved the most help
 df_client3 <- df %>%

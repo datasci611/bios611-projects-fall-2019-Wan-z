@@ -243,41 +243,32 @@ It is shown that the support in clothing increasing before 2015 and began to dec
 
 # Analysis on Clients
 
-In the part, I am going to analyze the changes in clients: how the number of clients and amount of services changes over years. Also I will try to predict the total demand in 2019 with linear regression (since the current data is not the complete record of 2019). 
+In the part, I am going to predict the total demand and clients in 2019 with linear regression. Moreover, some clients received support in a long period of time and I will figure out the individuals or families who get the most help from UMD.
 
-Moreover, some clients received support in a long period of time and I will figure out the individuals or families who get the most help from UMD.
-
-## Changes in demand
-
+## Prediction of 2019
 ```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
 df_client <- df %>%
   filter(year>1996 & year<2019) %>%
   group_by(year) %>%
   summarise(cases = n(),
-            clients =length(unique(`Client File Number`))) %>%    #number of cases and clients
-  gather('cases', 'clients', key='type', value = 'count')   
-
-ggplot(df_client, aes(x = year, y = count)) +
-  geom_line(aes(color = type)) +
-  labs(title = 'Changes in Number of Cases and Clients')
-```
-
-It is shown that the number of clients helped by UMD keeps increasing over years, so does the number of cases that UMD provided services. It seems very likely that the two variables increase linearly so then I will use linear regression to predict the demands in 2019.
-
-## Prediction of 2019
-```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
-df_client2 <- df %>%
-  filter(year>1996 & year<2019) %>%
-  group_by(year) %>%
-  summarise(cases = n(),
             clients =length(unique(`Client File Number`)))
 
-lmod <- lm(cases ~ year, data = df_client2) #predict the demand in 2019
+lmod <- lm(cases ~ year, data = df_client) #predict the demand in 2019
 predict_cases2019 <- lmod$coefficients %*% c(1,2019)
+ggplot(df_client, aes(x = year, y = cases)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = 'Trend of Amount of Cases')
 
-lmod2 <- lm(clients ~ year, data = df_client2) #predict the clients in 2019
+lmod2 <- lm(clients ~ year, data = df_client) #predict the clients in 2019
 predict_clients2019 <- lmod2$coefficients %*% c(1,2019)
+ggplot(df_client, aes(x = year, y = clients)) +
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = 'Trend of Number of clients')
 ```
+
+It is shown that the number of clients helped by UMD keeps increasing over years, so does the number of cases that UMD provided services. It seems very likely that the two variables increase linearly so then I have used linear regression to predict the demands in 2019.
 
 According to the model, the number of cases of services will come to `r as.integer(predict_cases2019)`, and the number of clients will increase to `r as.integer(predict_clients2019)`.
 
