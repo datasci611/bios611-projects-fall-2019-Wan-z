@@ -5,6 +5,7 @@ date: "9/24/2019"
 output: html_document
 ---
 This project draws analysis on the data set about support to the homeless provided by UMD. The purpose of this project:
+
 * Figure out the trends of the services over years and distribution by month.
 * Research the changes in the number of clients and cases of services over years.
 * Predict the demand in 2019 if it linearly increases.
@@ -162,7 +163,7 @@ ggplot(df_hgkit) +
 
 The service of providing hygiene kits was continued from 1997 to 2013. It began to increase from 2002 and decreased  dramatically in 2010, and in 2013 the UMD only provided 12 hygiene kits, which is supposed to the reason they stopped this service then.
  
-## Financial Support
+#### Financial Support
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 df_finance <- df %>%
@@ -231,7 +232,7 @@ ggplot(df_food2, aes(x=year, y=food_ave)) +
        y = 'Average Pounds of Food Provided')
 ```
 
-The covariance of the variables and the graphic shows that the UMD is providing more and more food, and also to more and more clients over years, whereas the food provided to each person did not keep increasing (vibrated before 2006).
+The Number of People Food Provided for and total food pounds positively correlated with year, and they also positively correlated with each other, which implies that the UMD is providing more and more food, and also to more and more clients over years. Whereas the food provided to each person did not keep increasing (keeps vibrating).
 
 #### Changes in Clothing Support over Time
 
