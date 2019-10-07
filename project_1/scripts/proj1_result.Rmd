@@ -4,10 +4,15 @@ author: "Wan Zhang 730341932"
 date: "9/24/2019"
 output: html_document
 ---
+This project draws analysis on the data set about support to the homeless provided by UMD. The purpose of this project:
+* Figure out the trends of the services over years and distribution by month.
+* Research the changes in the number of clients and cases of services over years.
+* Predict the demand in 2019 if it linearly increases.
 
-This project draws analysis on the data set about support to the homeless provided by UMD. Firstly we observe the total summary on the data set.
 
-```{r message=FALSE, warning=FALSE}
+Firstly we observe the total summary on the data set.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
 library('tidyverse') 
 library(stringr)
 library(ggplot2)
@@ -15,7 +20,9 @@ library(RColorBrewer)
 
 #import data
 df <- read_tsv('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/data/UMD_Services_Provided_20190719.tsv')
+```
 
+```{r}
 summary(df)
 ```
 
@@ -40,11 +47,14 @@ df$month = as.numeric(date[,1])
 df$day = as.numeric(date[,2])
 df$year = as.numeric(date[,3])
 ```
-# Discontinued or small scale services
+
+Some of the data is too old and the data for 2019 is not complete so I will filter the data by years from 1997 to 2018.
+
+## Discontinued or small scale services
 
 In this part, I am going to analyze the variables of Bus Tickets (Number of), Diapers, School Kits and Hygiene Kits, as well as Financial Support. The approaches I applied are functions in tidyverse package for data transformation and wrangling, and ggplot.
 
-## Bus tickets
+#### Bus tickets
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 #drop NA in Bus Tickets (Number of) and group it by year and month
 df_bus <- df %>%
@@ -56,52 +66,44 @@ df_bus <- df %>%
             number_bus_tickets = sum(`Bus Tickets (Number of)`)
   )
   
-myColors = c(brewer.pal(6,"YlOrRd"), brewer.pal(6,"Spectral")) # produces an array/list of colors
-names(myColors) = df_bus$month
-ggplot(df_bus, aes(x=year, y=number_bus_tickets)) +
-  geom_col(aes(fill=names(myColors))) +
-  scale_fill_discrete(name = "Month") +
+ggplot(df_bus, aes(x=year, y=number_bus_tickets, fill = month)) +
+  geom_col() +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
   labs(title = 'Bus Tickets (Number of)',
        y = 'Number of bus tickets by month')
 
 ggplot(df_bus, aes(x=month, y=number_bus_tickets)) +
-  geom_smooth() +
+  geom_smooth(se = FALSE) +
   scale_x_continuous(breaks = seq(1:12)) +
-  geom_point(color = 'lightblue') +
+  geom_point(color = 'darkblue') +
   labs(title = 'Bus Tickets (Number of) Varied in different month',
        y = 'Number of bus tickets by month')
-
 ```
 
-To tidy the data, I removed all the NA and group it by year and month, and then calculated the mean of number of bus tickets provided each time. It is shown that the bus tickets support was mainly provided in 2002 and 2003, and only provided once in June 2006 and August 2011 respectively, which implies that the service discontinued. The support in bus tickets reached its peak around Aug.~Oct., maybe the clients prefer to use the bus pass to get to medical appointments or jobs during that time.
+To tidy the data, I removed all the NA and group it by year and month, and then calculated the sum of number of bus tickets provided each time. It is shown that the bus tickets support was mainly provided in 2002 and 2003, and only provided once in June 2006 and August 2011 respectively, which implies that the service discontinued. The support in bus tickets reached its peak around Aug.~Oct., maybe the clients prefer to use the bus pass to get to medical appointments or jobs during that time.
 
-## Diapers
+#### Diapers
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 df_diapers <- df %>%
-  filter(year>1996 & year<2019) %>%
+  filter(year>1996 & year<2019 & Diapers<5000) %>%
   drop_na('Diapers') %>%
   group_by(year) %>%
   summarise(count = n(),
-            diapers = sum(Diapers)
+            diapers = sum(Diapers * 44)
   )
 
 ggplot(df_diapers) +
   geom_line(mapping = aes(x = year, y = diapers)) +
-  geom_point(mapping = aes(x = year, y = diapers),size = 4, alpha = 0.6, color='red') +
+  geom_point(mapping = aes(x = year, y = diapers),size = 2, alpha = 0.6, color='red') +
   labs(title = 'Diapers (average amount)',
        y = 'Average amount of diapers')
 
-ggplot(df_diapers) +
-  geom_point(mapping = aes(x = year, y = count), size = 4, alpha = 0.6, color = 'orange') +
-  geom_line(mapping = aes(x = year, y = count)) +
-  labs(title = 'Diapers (times of service)',
-       y = 'count')
 ```
 
-Similarly, I removed all the NA and group it by year and month, and then calculated the mean amount of provided diapers. It is shown that this service continued from 2000 to 2019 but there are only about 1000 services on that. The two graphic shows that although the times of support on diapers decreased in recent years, the amount of provided diapers significantly increased (especially in 2018 because more than 5000 diapers was provided at one time), which implies that UMD provided support more pinpointly.
+Similarly, I removed all the NA and group it by year and month, and then calculated the total amount of provided diapers. Noticing that in 2018 more than 5000 diapers was provided at one time, which is hundreds of times greater than the median, I think it is safe to remove it. It is shown that this service continued from 2000 to 2019 and the peak was reached in 2003~2009.
 
-## School Kits
+#### School Kits
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 df_schoolkits <- df %>%
@@ -113,22 +115,34 @@ df_schoolkits <- df %>%
             school_kits = sum(`School Kits`)
   )
  
- ggplot(df_schoolkits, mapping = aes(x = year, y = school_kits)) +
-  geom_col(aes(fill=month)) +
+ ggplot(df_schoolkits, mapping = aes(x = year, y = school_kits, fill = month)) +
+  geom_col() +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
   labs(title = 'School Kits',
        y = 'Annual Number of School Kits')
  
- ggplot(df_schoolkits, mapping = aes(x = month, y= school_kits)) +
-  geom_smooth() +
+df_schoolkits.month <- df %>%
+  filter(year>1996 & year<2019) %>%
+  drop_na('School Kits') %>%
+  filter(`School Kits` > 0) %>%  #we treat 0 as NA
+  group_by(month) %>%
+  summarise(count = n(),
+            school_kits = sum(`School Kits`)
+  ) %>%
+  arrange(desc(school_kits))
+df_schoolkits.month
+
+ggplot(df_schoolkits.month, mapping = aes(x = month, y= school_kits)) +
+  geom_smooth(se = FALSE) +
   scale_x_continuous(breaks = seq(1:12)) +
-  geom_point(color = 'lightblue') +
+  geom_point(color = 'darkblue') +
   labs(title = 'School Kits',
        y = 'Number of School Kits')
 ```
 
-The service of supporting school kits continued from 2001 to 2018 but it is provided less than diapers. In April 2015, 70 school kits were provided, which is the highest record. Most of this service was provided around April, August and in the winter (Nov. and Dec.), which I think is highly related to the beginning of school year.
+The service of supporting school kits continued from 2001 to 2019 but it is provided less than diapers. In April 2015, 70 school kits were provided, which is the highest record. Most of this service was provided around April, December and June, which I think is highly related to the beginning of school year.
 
-## Hgyiene Kits
+#### Hgyiene Kits
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 df_hgkit <- df %>%
@@ -141,10 +155,11 @@ df_hgkit <- df %>%
 
 ggplot(df_hgkit) +
   geom_line(mapping = aes(x = year, y = hgkit)) +
-  geom_point(mapping = aes(x = year, y = hgkit), size = 4, alpha = 0.6, color='darkred') +
+  geom_point(mapping = aes(x = year, y = hgkit), size = 2, alpha = 0.6, color='darkred') +
   labs(title = 'Hygiene Kits (average amount)',
        y = 'Annual amount of hgyiene kits')
 ```
+
 The service of providing hygiene kits was continued from 1997 to 2013. It began to increase from 2002 and decreased  dramatically in 2010, and in 2013 the UMD only provided 12 hygiene kits, which is supposed to the reason they stopped this service then.
  
 ## Financial Support
@@ -161,14 +176,14 @@ df_finance <- df %>%
 
 ggplot(df_finance) +
   geom_line(mapping = aes(x = year, y = finance)) +
-  geom_point(mapping = aes(x = year, y = finance),size = 4, alpha = 0.6, color='green') +
+  geom_point(mapping = aes(x = year, y = finance),size = 2, alpha = 0.6, color='green') +
   labs(title = 'Financial Support',
-       y = 'Average Financial Support') 
+       y = 'Financial Support') 
 ``` 
 
-The service of financial support was started in 1996 and discontinued in 2008. The average of money provided to the homeless did not change a lot over years but UMD tended to provide financial support to narrower scale of clients (the times of financial support decreasing).
+The service of financial support was started in 2002 and discontinued in 2008. The money provided to the homeless keeps decreasing after 2006 and so dose the cases of this services.
 
-# Food and Clothing
+## Food and Clothing
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
 df_main <- df %>%
@@ -182,7 +197,7 @@ df_main <- df %>%
 
 Filtering the valid data on `Food Provided for`, `Food Pounds` and `Clothing Items`, we can see that there are 44582 observations which are the most "complete" part of the study. In the following part of the project, I am going to draw analysis on food and clothing respectively.
 
-## Changes in Food Support over Time
+#### Changes in Food Support over Time
 
 ```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
 df_food <- df_main %>%
@@ -218,7 +233,7 @@ ggplot(df_food2, aes(x=year, y=food_ave)) +
 
 The covariance of the variables and the graphic shows that the UMD is providing more and more food, and also to more and more clients over years, whereas the food provided to each person did not keep increasing (vibrated before 2006).
 
-## Changes in Clothing Support over Time
+#### Changes in Clothing Support over Time
 
 ```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
 df_cloth <- df_main %>%
@@ -241,11 +256,11 @@ ggplot(df_cloth, aes(x=month, y=clothing)) +
 
 It is shown that the support in clothing increasing before 2015 and began to decrease slightly in recent years. However to my surprise, the provide of clothing seems not related to month (season).
 
-# Analysis on Clients
+## Analysis on Clients
 
-In the part, I am going to predict the total demand and clients in 2019 with linear regression. Moreover, some clients received support in a long period of time and I will figure out the individuals or families who get the most help from UMD.
+In the part, I am going to predict the total demand and clients in 2019 with linear regression. 
 
-## Prediction of 2019
+#### Prediction of 2019
 ```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
 df_client <- df %>%
   filter(year>1996 & year<2019) %>%
@@ -253,33 +268,33 @@ df_client <- df %>%
   summarise(cases = n(),
             clients =length(unique(`Client File Number`)))
 
-lmod <- lm(cases ~ year, data = df_client) #predict the demand in 2019
-predict_cases2019 <- lmod$coefficients %*% c(1,2019)
 ggplot(df_client, aes(x = year, y = cases)) +
   geom_point() +
   stat_smooth(method = "lm", col = "red") +
   labs(title = 'Trend of Amount of Cases')
 
-lmod2 <- lm(clients ~ year, data = df_client) #predict the clients in 2019
-predict_clients2019 <- lmod2$coefficients %*% c(1,2019)
 ggplot(df_client, aes(x = year, y = clients)) +
   geom_point() +
   stat_smooth(method = "lm", col = "red") +
   labs(title = 'Trend of Number of clients')
+
+```
+
+```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
+df_client.reduced <- df %>%
+  filter(year>2010 & year<2019) %>%
+  group_by(year) %>%
+  summarise(cases = n(),
+            clients =length(unique(`Client File Number`)))
+
+lmod <- lm(cases ~ year, data = df_client.reduced) #predict the demand in 2019
+predict_cases2019 <- lmod$coefficients %*% c(1,2019)
+
+lmod2 <- lm(clients ~ year, data = df_client.reduced) #predict the clients in 2019
+predict_clients2019 <- lmod2$coefficients %*% c(1,2019)
 ```
 
 It is shown that the number of clients helped by UMD keeps increasing over years, so does the number of cases that UMD provided services. It seems very likely that the two variables increase linearly so then I have used linear regression to predict the demands in 2019.
 
 According to the model, the number of cases of services will come to `r as.integer(predict_cases2019)`, and the number of clients will increase to `r as.integer(predict_clients2019)`.
-
-## The Five Clients Who Received the most support
-
-```{r fig.width=6, fig.height=4,message=FALSE, warning=FALSE}
-df_client3 <- df %>%
-  filter(year>1996 & year<=2019) %>%
-  group_by(`Client File Number`)  %>%
-  summarise(count = n(),) %>%
-  arrange(desc(count))
-head(df_client3, 5)
-```
 

@@ -29,19 +29,19 @@ df_bus <- df %>%
   )
 df_bus 
 
-myColors = c(brewer.pal(6,"YlOrRd"), brewer.pal(6,"Spectral")) # produces an array/list of colors
-names(myColors) = df_bus$month
-ggplot(df_bus, aes(x=year, y=number_bus_tickets)) +
-  geom_col(aes(fill=names(myColors))) +
-  scale_fill_discrete(name = "Month") +
+#myColors = c(brewer.pal(6,"YlOrRd"), brewer.pal(6,"Spectral")) # produces an array/list of colors
+#names(myColors) = df_bus$month
+ggplot(df_bus, aes(x=year, y=number_bus_tickets, fill = month)) +
+  geom_col() +
+  scale_fill_gradient2(low="blue", mid="white", high="red") +
   labs(title = 'Bus Tickets (Number of)',
        y = 'Number of bus tickets by month')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/bus_tickets.png', height=4, width=6)
 
 ggplot(df_bus, aes(x=month, y=number_bus_tickets)) +
-  geom_smooth() +
+  geom_smooth(se = FALSE) +
   scale_x_continuous(breaks = seq(1:12)) +
-  geom_point(color = 'lightblue') +
+  geom_point(color = 'darkblue') +
   labs(title = 'Bus Tickets (Number of) Varied in different month',
        y = 'Number of bus tickets by month')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/bus_tickets_smooth.png', height=4, width=6)
@@ -50,27 +50,27 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 
 #diapers
 df_diapers <- df %>%
-  filter(year>1996 & year<2019) %>%
+  filter(year>1996 & year<2019 & Diapers<5000) %>%
   drop_na('Diapers') %>%
   group_by(year) %>%
   summarise(count = n(),
-            diapers = sum(Diapers)
+            diapers = sum(Diapers * 44)
   )
 df_diapers
 
 ggplot(df_diapers) +
   geom_line(mapping = aes(x = year, y = diapers)) +
-  geom_point(mapping = aes(x = year, y = diapers),size = 4, alpha = 0.6, color='red') +
+  geom_point(mapping = aes(x = year, y = diapers),size = 2, alpha = 0.6, color='red') +
   labs(title = 'Diapers (average amount)',
        y = 'Average amount of diapers')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/diapers_ave.png', height=4, width=6)
 
-ggplot(df_diapers) +
-  geom_point(mapping = aes(x = year, y = count), size = 4, alpha = 0.6, color = 'orange') +
-  geom_line(mapping = aes(x = year, y = count)) +
-  labs(title = 'Diapers (times of service)',
-       y = 'count')
-ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/diapers_count.png', height=4, width=6)
+#ggplot(df_diapers) +
+  #geom_point(mapping = aes(x = year, y = count), size = 2, alpha = 0.6, color = 'orange') +
+  #geom_line(mapping = aes(x = year, y = count)) +
+  #labs(title = 'Diapers (times of service)',
+  #     y = 'count')
+#ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/diapers_count.png', height=4, width=6)
 
 #schoolkits
 df_schoolkits <- df %>%
@@ -90,10 +90,21 @@ ggplot(df_schoolkits, mapping = aes(x = year, y = school_kits)) +
 
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/schoolkits.png', height=4, width=6)
 
-ggplot(df_schoolkits, mapping = aes(x = month, y= school_kits)) +
-  geom_smooth() +
+df_schoolkits.month <- df %>%
+  filter(year>1996 & year<2019) %>%
+  drop_na('School Kits') %>%
+  filter(`School Kits` > 0) %>%  #we treat 0 as NA
+  group_by(month) %>%
+  summarise(count = n(),
+            school_kits = sum(`School Kits`)
+  ) %>%
+  arrange(desc(school_kits))
+df_schoolkits.month
+
+ggplot(df_schoolkits.month, mapping = aes(x = month, y= school_kits)) +
+  geom_smooth(se = FALSE) +
   scale_x_continuous(breaks = seq(1:12)) +
-  geom_point(color = 'lightblue') +
+  geom_point(color = 'darkblue') +
   labs(title = 'School Kits',
        y = 'Number of School Kits')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/schoolkits_month.png', height=4, width=6)
@@ -110,7 +121,7 @@ df_hgkit
 
 ggplot(df_hgkit) +
   geom_line(mapping = aes(x = year, y = hgkit)) +
-  geom_point(mapping = aes(x = year, y = hgkit), size = 4, alpha = 0.6, color='darkred') +
+  geom_point(mapping = aes(x = year, y = hgkit), size = 2, alpha = 0.6, color='darkred') +
   labs(title = 'Hygiene Kits (average amount)',
        y = 'Annual amount of hgyiene kits')
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/hgkit.png', height=4, width=6)
@@ -128,9 +139,9 @@ df_finance
 
 ggplot(df_finance) +
   geom_line(mapping = aes(x = year, y = finance)) +
-  geom_point(mapping = aes(x = year, y = finance),size = 4, alpha = 0.6, color='green') +
+  geom_point(mapping = aes(x = year, y = finance),size = 2, alpha = 0.6, color='green') +
   labs(title = 'Financial Support',
-       y = 'Average Financial Support') 
+       y = 'Financial Support') 
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/finance.png', height=4, width=6)
 
 
@@ -139,7 +150,7 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 df_main <- df %>%
   filter(year>1996 & year<2019) %>%
   drop_na(`Food Provided for`, `Food Pounds`, `Clothing Items`) %>%
-  filter(`Food Provided for`>0) %>%
+  filter(`Food Provided for`>0 & `Food Pounds`<450000) %>%
   select(year, month, day, `Food Provided for`, `Food Pounds`, `Clothing Items`) %>%
   mutate(ave_food_pounds = `Food Pounds`/`Food Provided for`) %>%  #add a variable of food pounds per person
   filter(!is.na(ave_food_pounds))      #remove NA caused by 0 in `Food Provided for`
@@ -204,7 +215,7 @@ ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/projec
 
 #predict with linear regression
 df_client <- df %>%
-  filter(year>1996 & year<2019) %>%
+  filter(year>2010 & year<2019) %>%
   group_by(year) %>%
   summarise(cases = n(),
             clients =length(unique(`Client File Number`)))
@@ -226,10 +237,4 @@ ggplot(df_client, aes(x = year, y = clients)) +
 ggsave('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_1/results/predict_clients.png', height=6, width=8)
 
 
-#the clients recieved the most help
-df_client3 <- df %>%
-  filter(year>1996 & year<=2019) %>%
-  group_by(`Client File Number`)  %>%
-  summarise(count = n(),) %>%
-  arrange(desc(count))
-head(df_client3, 5)
+
