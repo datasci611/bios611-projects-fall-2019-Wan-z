@@ -16,4 +16,5 @@ This study used survey data provided by Urban Ministries of Durham. This data in
 
 * What amount of demand going to be in 2019
 
-## Functions of the App
+## My App
+https://wanz.shinyapps.io/project_2/

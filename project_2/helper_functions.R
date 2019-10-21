@@ -4,7 +4,7 @@ library(ggplot2)
 library(RColorBrewer)
 
 #import data
-df <- read_tsv('/Users/zhangwan/Documents/GitHub/bios611-projects-fall-2019-Wan-z/project_2/data/UMD_Services_Provided_20190719.tsv')
+df <- read_tsv('./data/UMD_Services_Provided_20190719.tsv')
 date <- str_split_fixed(df$Date, '/', 3)
 df$month = as.numeric(date[,1])
 df$day = as.numeric(date[,2])
