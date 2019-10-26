@@ -13,6 +13,9 @@ ui <- fluidPage(
              h4('How Trends of Discontinued or Small Scale Services Look Like'),
              sidebarLayout(
                sidebarPanel(
+                 helpText('In this part, I am going to analyze the trends of variables of Bus Tickets (Number of), 
+                          Diapers, School Kits and Hygiene Kits, as well as Financial Support, 
+                          from 1997 to 2018. Please feel free to select the variable you are interested in. '),
                  selectInput("trend", 
                    h5("Trend of Which Variable"), 
                    choices = list('Bus Tickets' = 1,
@@ -32,6 +35,9 @@ ui <- fluidPage(
              h4('How Distributions of Discontinued or Small Scale Services Look Like'),
              sidebarLayout(
                sidebarPanel(
+                 helpText('In this part, I am going to analyze the seasonal distributions of variables of Bus Tickets (Number of), 
+                          Diapers, School Kits and Hygiene Kits, as well as Financial Support, 
+                          from 1997 to 2018. Please feel free to select the variable you are interested in. '),
                  selectInput("distri", 
                              h5("Distribution of Which Variable"), 
                              choices = list('Bus Tickets' = 1,
@@ -56,6 +62,9 @@ ui <- fluidPage(
                tabPanel("Plot",
                         sidebarLayout(
                           sidebarPanel(
+                            helpText('In this part I am going to analyze correlations between time, number of people Food Provided for, 
+                                     total Food Pounds, food pounds provided to each person number of people.
+                                     Please feel free to select the variable you are interested in.'),
                             selectInput("select_food", 
                                         h5("Variables for x-axis"), 
                                         choices = list('Total Pounds of Food' = 1,
@@ -70,6 +79,9 @@ ui <- fluidPage(
                         )
                ),
                tabPanel("Correlation",
+                        helpText('The Number of People Food Provided for and total food pounds positively correlated with year, 
+                                 and they also positively correlated with each other, which implies that the UMD is providing more and more food, 
+                                 and also to more and more clients over years.'),
                         plotOutput("correlation")
                )
              )
@@ -78,6 +90,8 @@ ui <- fluidPage(
              h4('Trends and Distributions of Clothing Items'),
              sidebarLayout(
                sidebarPanel(
+                 helpText('It is shown that the support in clothing increasing before 2015 and began to decrease slightly in recent years,
+                          whereas the provide of clothing seems not related to month (season).'),
                  radioButtons("plotType", 
                               h5("Plots Type"),
                               choices = list("Histogram" = 1, "Smooth" = 2)
@@ -92,6 +106,10 @@ ui <- fluidPage(
     tabPanel("Prediction of 2019",
              navbarPage("Prediction of 2019",
                         tabPanel("Cases",
+                                 helpText('In this part, I am going to fit the data with linear regression model and predict the amount of cases in 2019.
+                                          Please feel free to discard the data you consider as outliers. 
+                                          You can exclude points from a linear model by clicking on points, 
+                                          or by selecting them with a brush and clicking "Toggle points". Click "Reset" to reset your excluding'),
                                  fluidRow(
                                    column(width = 6,
                                           plotOutput("plot1", height = 350,
@@ -107,6 +125,10 @@ ui <- fluidPage(
                                  )
                                  ),
                         tabPanel("Clients",
+                                 helpText('In this part, I am going to fit the data with linear regression model and predict number of clients in 2019.
+                                          Please feel free to discard the data you consider as outliers. 
+                                          You can exclude points from a linear model by clicking on points, 
+                                          or by selecting them with a brush and clicking "Toggle points". Click "Reset" to reset your excluding'),
                                  fluidRow(
                                    column(width = 6,
                                           plotOutput("plot2", height = 350,

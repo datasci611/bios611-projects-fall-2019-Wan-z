@@ -5,8 +5,8 @@ account: wanz
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1327491
-bundleId: 2522750
+bundleId: 2538779
 url: https://wanz.shinyapps.io/project_2/
-when: 1571698255.98959
+when: 1572107556.81235
 asMultiple: FALSE
 asStatic: FALSE
