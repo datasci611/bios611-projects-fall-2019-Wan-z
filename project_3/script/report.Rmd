@@ -5,17 +5,11 @@ date: "11/14/2019"
 output: html_document
 ---
 
-The datasets are provided by Urban Ministries of Durham, demonstating the imformation of clients they provided support to from 2014 by now. Unlike the date for project 1, we can only the the imfornation of clients instead of UMD services. 
-
-```{r setup, include=FALSE, warning=FALSE, message=FALSE}
-library('tidyverse')
-library('ggplot2')
-df_client <- read.csv('../data/CLIENTS.csv')
-df_case <- read.csv('../data/CASE.csv')
-df_n <- read.csv('../data/number.csv')
-```
+The datasets are provided by Urban Ministries of Durham, demonstating the imformation of clients they provided support to from 2014 by now. Unlike the date for project 1, we can only the the imfornation of clients instead of UMD services. The purpose of this project is analyzing the data with R and python to provide some visualized result from three aspects: the features of clients, analysis on the situation before the clients entry & after exit, trends of amount of clients and cases. 
 
 #### 1. How many times the clients come to UMD? How long they stay with UMD?
+
+Firstly we show the total distribution of the frenquency (times each client comes to UMD) and period (how many days they stay with UMD each time).
 
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 ggplot(df_client, aes(x = frequency)) +
@@ -29,7 +23,8 @@ ggplot(df_client, aes(x = Period)) +
 
 ##### (i) Disability Status v.s. Frequency/Period
 
-The dataset investigated the determination on 7 types of disability and I am going to show the relationship between disability status and the frequency they come to UMD/the period they stay with UMD.
+The dataset investigated the determination on 7 types of disability and I am going to show the relationship between disability status (how many kinds of disability determination) and the frequency they come to UMD/the period they stay with UMD.
+
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 df_client$disability <- as.factor(df_client$disability)
 ggplot(df_client, aes(x = disability, y = frequency)) +
@@ -39,20 +34,27 @@ ggplot(df_client, aes(x = disability, y = Period)) +
   geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
   labs(title = 'How Disabiltiy Status Influence Period')
 ```
+
+We can see that overall, clients with more types of disability tend to come to UMD more frenquently and stay for more time (not applied to 7 because there is few clients in that group).
 
 ##### (ii) Health Insurance v.s. Frequency/Period
 
+The dataset provided information on 10 types of health insurance and similarly, I am going to show the relationship between health insurance covering status (how many kinds of health insurance covered) and the frequency they come to UMD/the period they stay with UMD.
+
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
-df_client$disability <- as.factor(df_client$disability)
-ggplot(df_client, aes(x = disability, y = frequency)) +
-  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
-  labs(title = 'How Disabiltiy Status Influence Frequency')
-ggplot(df_client, aes(x = disability, y = Period)) +
-  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
-  labs(title = 'How Disabiltiy Status Influence Period')
+df_client$healthins_types <- as.factor(df_client$healthins_types)
+ggplot(df_client, aes(x = healthins_types, y = frequency)) +
+  geom_boxplot(aes(group = cut_width(healthins_types, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Health Insurance Covering Status Influence Frequency')
+
+ggplot(df_client, aes(x = healthins_types, y = Period)) +
+  geom_boxplot(aes(group = cut_width(healthins_types, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Health Insurance Covering Status Influence Period')
 ```
 
 ##### (iii) Income v.s. Frequency/Period
+
+In this part, I am going to deal with the relationship between clients income and the frenquency/period. There are two datasets about clients income: entry and exit. I found only a few part of them got changes on income so I am going to analyze with the exit income data and in next part I will seperately consider the changes of income.
 
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 ggplot(df_client, aes(x = Monthly.Amount..Exit., y = frequency)) +
@@ -66,6 +68,8 @@ ggplot(df_client, aes(x = Monthly.Amount..Exit., y = Period)) +
 
 ##### (iv) Changes of Income (Entry and Exit) v.s. Frequency/Period
 
+There are about 200 clients got changes of their income when entry UMD and exit. So I will figure out how the frequency and period correlated with their income changes. 
+
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 ggplot(df_client, aes(x = frequency, y = changes)) +
   geom_col(fill = 'red', alpha = 0.5) +
@@ -77,6 +81,7 @@ ggplot(df_client, aes(x = Period, y = changes)) +
 ```
 
 ##### (v) Age at Entry v.s. Period
+
 
 ```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
 ggplot(df_case %>% filter(housing_status != ""), aes(x = Client.Age.at.Entry, y = Period)) +
@@ -98,6 +103,20 @@ ggplot(df_casenew, aes(x = Client.Age.at.Entry, y = period)) +
 ```
 
 #### 2. What Happened Before the Clients Entry & After They Exit?
+
+To answer this question, I am going to analyze the data of Destination After Exit and Homeless Status Before Entry so that I can further get the questions like who is more likely to come to UMD and how well the clients get helped from UMD or why they finally exit.
+
+##### Destination After Exit
+
+```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+#destination after leave
+ggplot(df_case %>% filter(Destination != ""), aes(x = Destination)) +
+  geom_bar(position = position_stack(reverse = TRUE), fill = 'blue', alpha = 0.6) +
+  coord_flip() +
+  theme(legend.position = "top")
+```
+
+##### Homeless Status Before Entry
 
 ```{r echo=FALSE, fig.height=4, fig.width=8, warning=FALSE, message=FALSE}
 df_case$months_on_street <- factor(df_case$months_on_street, levels=c('<1', '2', '3', '4','5','6','7','8', '9','10','11','12','>12'))
@@ -122,6 +141,8 @@ ggplot(df_case_sub %>% filter(months_on_street != ""&prior_living_situation != "
 ```
 
 #### 3. How the Amount of Clients and Support Cases Change over Years
+
+The dataset provide the information of clients and support cases from 2014-2019. In this part, I am going to show how the amount of clients and cases change over years.
 
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 df_ns <- df_n %>% 
