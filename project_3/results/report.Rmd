@@ -1,0 +1,135 @@
+---
+title: "Analysis on Urban Ministries of Durham Data"
+author: "Wan Zhang 730341932"
+date: "11/14/2019"
+output: html_document
+---
+
+The datasets are provided by Urban Ministries of Durham, demonstating the imformation of clients they provided support to from 2014 by now. Unlike the date for project 1, we can only the the imfornation of clients instead of UMD services. 
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+library('tidyverse')
+library('ggplot2')
+df_client <- read.csv('../data/CLIENTS.csv')
+df_case <- read.csv('../data/CASE.csv')
+df_n <- read.csv('../data/number.csv')
+```
+
+#### 1. How many times the clients come to UMD? How long they stay with UMD?
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+ggplot(df_client, aes(x = frequency)) +
+  geom_histogram(fill = 'red', alpha = 0.5, color = 'red') +
+  labs(title = 'How Many Time Clients Come to UMD')
+
+ggplot(df_client, aes(x = Period)) +
+  geom_histogram(fill = 'orange', alpha = 0.5, color = 'orange') +
+  labs(title = 'How Long Clients Stay with UMD Per Time (days)')
+```
+
+##### (i) Disability Status v.s. Frequency/Period
+
+The dataset investigated the determination on 7 types of disability and I am going to show the relationship between disability status and the frequency they come to UMD/the period they stay with UMD.
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+df_client$disability <- as.factor(df_client$disability)
+ggplot(df_client, aes(x = disability, y = frequency)) +
+  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Disabiltiy Status Influence Frequency')
+ggplot(df_client, aes(x = disability, y = Period)) +
+  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Disabiltiy Status Influence Period')
+```
+
+##### (ii) Health Insurance v.s. Frequency/Period
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+df_client$disability <- as.factor(df_client$disability)
+ggplot(df_client, aes(x = disability, y = frequency)) +
+  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Disabiltiy Status Influence Frequency')
+ggplot(df_client, aes(x = disability, y = Period)) +
+  geom_boxplot(aes(group = cut_width(disability, 0.25)), outlier.alpha = 0.1) +
+  labs(title = 'How Disabiltiy Status Influence Period')
+```
+
+##### (iii) Income v.s. Frequency/Period
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+ggplot(df_client, aes(x = Monthly.Amount..Exit., y = frequency)) +
+  geom_bin2d() +
+  labs(title = 'How Income Influence Frequency', x = 'Monthly Income')
+
+ggplot(df_client, aes(x = Monthly.Amount..Exit., y = Period)) +
+  geom_bin2d() +
+  labs(title = 'How Income Influence Period', x = 'Monthly Income')
+```
+
+##### (iv) Changes of Income (Entry and Exit) v.s. Frequency/Period
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+ggplot(df_client, aes(x = frequency, y = changes)) +
+  geom_col(fill = 'red', alpha = 0.5) +
+  labs(title = 'Changes in Income V.S. Frequency', y='Changes in Income')
+
+ggplot(df_client, aes(x = Period, y = changes)) +
+  geom_point(color = 'blue', alpha = 0.5) +
+  labs(title = 'Changes in Income V.S. Period', y='Changes in Income')
+```
+
+##### (v) Age at Entry v.s. Period
+
+```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+ggplot(df_case %>% filter(housing_status != ""), aes(x = Client.Age.at.Entry, y = Period)) +
+  geom_col(aes(fill = housing_status)) +
+  labs(title = 'Period vs Client Age at Entry',
+       x = 'Client Age at Entry')
+```
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+df_casenew <- df_case %>%
+  filter(housing_status != "") %>%
+  group_by(Client.Age.at.Entry) %>%
+  summarise(period = mean(Period))
+ggplot(df_casenew, aes(x = Client.Age.at.Entry, y = period)) +
+  geom_smooth(se = FALSE, color = 'darkblue') +
+  geom_point(color = 'blue', size = 0.8, alpha = 0.6) + 
+  labs(title = 'How Period Influenced by Client Age at Entry',
+       x = 'Client Age at Entry')
+```
+
+#### 2. What Happened Before the Clients Entry & After They Exit?
+
+```{r echo=FALSE, fig.height=4, fig.width=8, warning=FALSE, message=FALSE}
+df_case$months_on_street <- factor(df_case$months_on_street, levels=c('<1', '2', '3', '4','5','6','7','8', '9','10','11','12','>12'))
+ggplot(df_case %>% filter(months_on_street != ""&domestic_violence != ""), aes(x = months_on_street)) +
+  geom_bar(aes(fill = domestic_violence)) +
+  labs(title = 'How Many Months the Clients Homeless on Street in Past 3 Years',
+       x = 'Number of Months Homeless on Street')
+```
+
+```{r echo=FALSE, fig.height=6, fig.width=6, warning=FALSE, message=FALSE}
+df_case_sub <- df_case %>%
+  group_by(prior_living_situation) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) 
+df_case_sub <- df_case %>%
+  filter(prior_living_situation %in% c("Place not meant for habitation (HUD)", "Emergency shelter, incl. hotel/motel paid for w/ ES voucher, or RHY-funded Host Home shelter (HUD)", "Staying or living in a friend's room, apartment or house (HUD)", "Staying or living in a family member's room, apartment or house (HUD)"))
+ggplot(df_case_sub %>% filter(months_on_street != ""&prior_living_situation != ""), aes(x = months_on_street)) +
+  geom_bar(aes(fill = prior_living_situation)) +
+  theme(legend.position = "bottom", legend.direction = 'vertical') +
+  labs(title = 'How Many Months the Clients Homeless on Street in Past 3 Years',
+       x = 'Number of Months Homeless on Street')
+```
+
+#### 3. How the Amount of Clients and Support Cases Change over Years
+
+```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
+df_ns <- df_n %>% 
+  gather(type, number, c(number_cases, number_clients)) 
+ggplot(df_ns, aes(x = Entry_Year, y = number)) +
+  geom_line(aes(color = type)) +
+  geom_point(size = 0.8, aes(shape = type)) +
+  scale_fill_discrete(breaks=c("number_cases", "number_clients"),
+                      labels = c("Number of Cases", "Number of Clients")) +
+  labs(title = 'Distribution of Amount of Clients and Cases')
+```
