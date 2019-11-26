@@ -1,0 +1,31 @@
+1. The Makefile is present as the workflow manager.
+
+2. You use Python for tidying and R Tidyverse for plotting very well. 
+
+3. Docker file defines execution environments properly.
+
+4. You use a number of very helpful and visually appealing plots for your data. The histograms, barplot, and scatterplot with
+trend line are particularly well-used. The boxplots are generally informative, although the few outliers and lack of significant
+differences between the groups may mean they are not the best choice for that data. 
+
+5. You do a good job of splitting the project into sections and asking questions for each section. I think you could add a 
+little more commentary, since you have so many plots, to describe what answers you get from the data.
+
+6. It is good that you have an introduction to the project and commentary at the start of each section. I think the purpose
+of your project can more specifically state what questions you hope to answer and how you will do so.
+
+7. I think the plots speak for themselves quite well about their purpose from the client's point of view. I think the introduction
+and some of the section commentary can be worded in ways that better highlight answers the client will be able to draw from 
+this project that could help them in their work.
+
+8. The source of the data is stated clearly at the beginning. I think you could add some background information about UMD so 
+that people unfamiliar with them could also better understand this project.
+
+9. The figures all have explanations at the beginning. Some of the plots have conclusions at the end, and I would make sure that
+each one (or at least each set of plots) has commentary afterwards to explain what it shows.
+
+10. The plots are all very straightforward and the analysis is not too complicated to understand. I think you can give a bit
+more explanation of the trend line in the scatterplot, since its meaning may not be obvious to laymen.
+
+11. Your sections and plots each make clear information for the viewers. I would add a summary at the end to show your conclusions
+and highlight the important takeaways.

@@ -1,0 +1,6 @@
+Your project is very well coded. You properly utilize all required computing programs, and the code runs smoothly. You may want to consider adding more comments to your code (especially
+your python code) so it is easier for an outside viewer (i.e. the grader) to understand what each chunk of code is doing. Your report contains some grammatical errors that should be easy
+to fix. I would say the main aspect of your project that could be further improved is explaining how your analyses can be utilized by UMD. While you provided a plethora of graphs and
+figures in your report, you do not explicitly state for any of them how you believe UMD can use them to improve their operations. It may not be necessary to provide such an explanation
+for each individual figure, I would highly recommend that you at least do so for the 3 categories (i.e. "How Many Times Client Comes to UMD", etc.) that you created. If you make these
+changes to your project, I believe it will become even better than it currently is. Good luck!
