@@ -1,8 +1,0 @@
-FROM python:3
-
-WORKDIR /mydata
-COPY proj3_wrangling.ipynb ./
-
-RUN pip install pandas
-
-CMD ["python3","./proj3_wrangling.ipynb"]

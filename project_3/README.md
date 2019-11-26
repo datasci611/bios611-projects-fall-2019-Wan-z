@@ -2,6 +2,12 @@
 
 Wan Zhang 730341932
 
+Project 3 is a complete analysis on datasets provided by Urban Ministries of Durham, adopting Python, R, Make and Docker. To run the project in proj_3 directory, 
+
+```
+make results/report.html -f Makefile
+```
+
 #### Background
 
 The datasets are provided by Urban Ministries of Durham, demonstrating the information of clients they provided support to from 2014 by now. Unlike the date for project 1, we can only the the information of clients instead of UMD services. The purpose of this project is analyzing the data with R and python to provide some visualized result to assist UMD to provide support more effectively.

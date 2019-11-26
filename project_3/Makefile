@@ -1,18 +1,43 @@
-data-wrangling: Dockerfile.data
-	docker build -t data-wrangling . -f Dockerfile.data
+script/proj3_wrangling.py: script/proj3_wrangling.ipynb
+	jupyter nbconvert --to python script/proj3_wrangling.ipynb
 
-CLIENTS.csv: data-wrangling
-	docker run --rm -v ${PWD}:/data data-wrangling
+pull-pandas:
+	docker pull amancevice/pandas:0.25.2-slim && touch $@
 
-CASE.csv: data-wrangling
-	docker run --rm -v ${PWD}:/data data-wrangling
 
-number.csv: data-wrangling
-	docker run --rm -v ${PWD}:/data data-wrangling
+CLIENTS.csv: pull-pandas \
+							script/proj3_wrangling.py
+	docker run -it \
+		--rm -v $(shell pwd):/workdir \
+		-w /workdir \
+		amancevice/pandas:0.25.2-slim \
+			python script/proj3_wrangling.py \
+			script/CLIENTS.csv \
+			
 
-report-maker: Dockerfile
-	docker build -t report-maker . -f Dockerfile
+CASE.csv: pull-pandas \
+							script/proj3_wrangling.py
+	docker run -it \
+		--rm -v $(shell pwd):/workdir \
+		-w /workdir \
+		amancevice/pandas:0.25.2-slim \
+			python script/proj3_wrangling.py \
+			script/CASE.csv \
 
-report.html : report-maker
-	docker run --rm -v $PWD:/report report-maker
+number.csv: pull-pandas \
+							script/proj3_wrangling.py	
+	docker run -it \
+		--rm -v $(shell pwd):/workdir \
+		-w /workdir \
+		amancevice/pandas:0.25.2-slim \
+			python script/proj3_wrangling.py \
+			script/number.csv \
 
+results/report.html: results/report.Rmd \
+			CLIENTS.csv \
+			CASE.csv \
+			number.csv
+	docker run -it --rm \
+	-v $(shell pwd):/workdir \
+	-w /workdir rocker/tidyverse \
+	Rscript -e "library(rmarkdown); rmarkdown::render('results/report.Rmd', 'html_document')"
