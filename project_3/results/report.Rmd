@@ -29,7 +29,7 @@ ggplot(df_client, aes(x = Period)) +
   labs(title = 'How Long Clients Stay with UMD Per Time (days)')
 ```
 
-The majority of our clients will come to UMD for one or two times and stay for less than 30 days.
+The majority of our clients will come to UMD for one or two times and stay for less than 30 days. In the following parts, I will analyze how the factors (disability, Health Insurance, Income and Age at Entry) affect frequency and period.
 
 ##### (i) Disability Status v.s. Frequency/Period
 
@@ -94,16 +94,11 @@ ggplot(df_client, aes(x = Period, y = changes)) +
   labs(title = 'Changes in Income V.S. Period', y='Changes in Income')
 ```
 
+It is clear that clients who get more increase in income tend to leave UMD more quickly and would less possibly come back.
 
 ##### (v) Age at Entry v.s. Period
 
-
-```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
-ggplot(df_case %>% filter(housing_status != ""), aes(x = Client.Age.at.Entry, y = Period)) +
-  geom_col(aes(fill = housing_status)) +
-  labs(title = 'Period vs Client Age at Entry',
-       x = 'Client Age at Entry')
-```
+To figure out how long the clients at different age stay with UMD, I calculated the average of period of different entry age. Since lots of clients came to UMD for several times, this time I did not group the data by clients ID but by cases.
 
 ```{r echo=FALSE, fig.height=4, fig.width=6, warning=FALSE, message=FALSE}
 df_casenew <- df_case %>%
@@ -117,19 +112,13 @@ ggplot(df_casenew, aes(x = Client.Age.at.Entry, y = period)) +
        x = 'Client Age at Entry')
 ```
 
+The overall trend shows that the elder when clients entry UMD, the longer they tend to stay.
+
+By now we can summary some features of UMD potential clients: people with disabilities especially multiple types of disability (from 2 ~ 6); with no health insurance; no or low income (<1000 monthly) and continued for a period of time (get no changes for some time); with old age.
+
 #### 2. What Happened Before the Clients Entry & After They Exit?
 
 To answer this question, I am going to analyze the data of Destination After Exit and Homeless Status Before Entry so that I can further get the questions like who is more likely to come to UMD and how well the clients get helped from UMD or why they finally exit.
-
-##### Destination After Exit
-
-```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
-#destination after leave
-ggplot(df_case %>% filter(Destination != ""), aes(x = Destination)) +
-  geom_bar(position = position_stack(reverse = TRUE), fill = 'blue', alpha = 0.6) +
-  coord_flip() +
-  theme(legend.position = "top")
-```
 
 ##### Homeless Status Before Entry
 
@@ -155,6 +144,22 @@ ggplot(df_case_sub %>% filter(months_on_street != ""&prior_living_situation != "
        x = 'Number of Months Homeless on Street')
 ```
 
+A large part of clients experience several-month-homeless before they came to UMD and a majority of them turn to UMD for help in the first month of homeless. I try to test my hypothesis that demostic violence may contribute to homeless to some degree.
+
+The plot shows that proportion of homeless clients who suffered from domestic violence is higher than that proportion of the whole country (approximately 3%, comes from "National Statistics". NCADV. National Coalition Against Domestic Violence. Retrieved 5 October 2018.) And for the prior living situation, the choice contribute the most is "place not meant for habitation".
+
+##### Destination After Exit
+
+```{r echo=FALSE, fig.height=4, fig.width=10, warning=FALSE, message=FALSE}
+#destination after leave
+ggplot(df_case %>% filter(Destination != ""), aes(x = Destination)) +
+  geom_bar(position = position_stack(reverse = TRUE), fill = 'blue', alpha = 0.6) +
+  coord_flip() +
+  theme(legend.position = "top")
+```
+
+Top 3 meaningful destination: temporarily living with friends; temporarily living with family; rental by clients, no ongoing housing subsidy.
+
 #### 3. How the Amount of Clients and Support Cases Change over Years
 
 The dataset provide the information of clients and support cases from 2014-2019. In this part, I am going to show how the amount of clients and cases change over years.
@@ -169,3 +174,7 @@ ggplot(df_ns, aes(x = Entry_Year, y = number)) +
                       labels = c("Number of Cases", "Number of Clients")) +
   labs(title = 'Distribution of Amount of Clients and Cases')
 ```
+
+The plot shows that the trends of amount of clients and cases are similar: they increased dramatically from 2014~2015 and became smooth during 2015~2016, and in recent years decrease gradually. Since there are only data for 6 years, I am not going to do any prediction.
+
+

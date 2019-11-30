@@ -8,9 +8,11 @@ Project 3 is a complete analysis on datasets provided by Urban Ministries of Dur
 make results/report.html -f Makefile
 ```
 
+And the final report is lying in the results/ directory.
+
 #### Background
 
-The datasets are provided by Urban Ministries of Durham, demonstrating the information of clients they provided support to from 2014 by now. Unlike the date for project 1, we can only the the information of clients instead of UMD services. The purpose of this project is analyzing the data with R and python to provide some visualized result to assist UMD to provide support more effectively.
+The datasets are provided by Urban Ministries of Durham, demonstrating the information of clients they provided support to from 2014 by now. [Urban Ministries of Durham](https://umdurham.org/who-we-are.html "Markdown") is a non-profit organization working to end homelessness and meet the emergency needs of very poor and hungry neighbors through its programs. Unlike the date for project 1, we can only the the information of clients instead of UMD services. The purpose of this project is analyzing the data with R and python to provide some visualized result to assist UMD to provide support more effectively.
 
 #### Data Description
 
